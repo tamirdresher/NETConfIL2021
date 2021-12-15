@@ -14,7 +14,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-var summaries = new[]
+var summaries = new List<string>
 {
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 };
@@ -26,12 +26,20 @@ app.MapGet("/weatherforecast", () =>
        (
            DateTime.Now.AddDays(index),
            Random.Shared.Next(-20, 55),
-           summaries[Random.Shared.Next(summaries.Length)]
+           summaries[Random.Shared.Next(summaries.Count)]
        ))
         .ToArray();
     return forecast;
 })
 .WithName("GetWeatherForecast");
+
+app.MapPost("/summary",(string summary)=>summaries.Add(summary));
+
+app.MapDelete("/summary/{id}", (int id, ILogger<WeatherForecast> logger) => {
+    summaries.RemoveAt(id);
+    logger.LogDebug("Removed summary {id}", id);
+});
+
 
 app.Run();
 
