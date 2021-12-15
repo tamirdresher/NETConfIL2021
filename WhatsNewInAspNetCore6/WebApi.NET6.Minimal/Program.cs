@@ -35,9 +35,14 @@ app.MapGet("/weatherforecast", () =>
 
 app.MapPost("/summary",(string summary)=>summaries.Add(summary));
 
-app.MapDelete("/summary/{id}", (int id, ILogger<WeatherForecast> logger) => {
+app.MapDelete("/summary/{id}", (int id, ILogger<WeatherForecast> logger) => {    
+    if (id < 0 || id > summaries.Count-1)
+    {
+        return Results.NotFound();
+    }
     summaries.RemoveAt(id);
     logger.LogDebug("Removed summary {id}", id);
+    return Results.Ok();
 });
 
 
