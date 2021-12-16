@@ -20,31 +20,47 @@ var summaries = new List<string>
 };
 
 app.MapGet("/weatherforecast", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-       new WeatherForecast
-       (
-           DateTime.Now.AddDays(index),
-           Random.Shared.Next(-20, 55),
-           summaries[Random.Shared.Next(summaries.Count)]
-       ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
-
-app.MapPost("/summary",(string summary)=>summaries.Add(summary));
-
-app.MapDelete("/summary/{id}", (int id, ILogger<WeatherForecast> logger) => {    
-    if (id < 0 || id > summaries.Count-1)
     {
-        return Results.NotFound();
-    }
-    summaries.RemoveAt(id);
-    logger.LogDebug("Removed summary {id}", id);
-    return Results.Ok();
-});
+        var forecast = Enumerable.Range(1, 5).Select(index =>
+           new WeatherForecast
+           (
+               DateTime.Now.AddDays(index),
+               Random.Shared.Next(-20, 55),
+               summaries[Random.Shared.Next(summaries.Count)]
+           ))
+            .ToArray();
+        return forecast;
+    })
+    .WithName("GetWeatherForecast");
 
+app.MapPost("/summary", (string summary) => summaries.Add(summary))
+    .WithName("AddSummary")
+    .WithTags("Summary")
+    .Produces(200)
+    .Produces(404); 
+
+app.MapDelete("/summary/{id}", (int id, ILogger<WeatherForecast> logger) =>
+    {
+        if (id < 0 || id > summaries.Count - 1)
+        {
+            return Results.NotFound();
+        }
+        summaries.RemoveAt(id);
+        logger.LogDebug("Removed summary {id}", id);
+        return Results.Ok();
+    })
+    .WithName("DeleteSummary")
+    .WithTags("Summary")
+    .Produces(200)
+    .Produces(404);
+
+
+
+app.MapGet("/summary", (int id, ILogger<WeatherForecast> logger) =>
+    {
+        return summaries;
+    })
+    .ExcludeFromDescription();
 
 app.Run();
 
