@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Mvc;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -40,8 +42,15 @@ app.MapDelete("/summary/{id}", (int id, ILogger<WeatherForecast> logger) => {
     logger.LogDebug("Removed summary {id}", id);
 });
 
+app.MapGet("/{id}", ([FromRoute] int id,
+                     [FromQuery(Name = "p")] int page,
+                     [FromServices] HttpContext context,
+                     [FromHeader(Name = "Content-Type")] string contentType) => { });
+
 
 app.MapMethods("/options-or-head", new[] { "OPTIONS", "HEAD" }, () => "This is an options or head request ");
+
+app.Run();
 
 internal record WeatherForecast(DateTime Date, int TemperatureC, string? Summary)
 {
