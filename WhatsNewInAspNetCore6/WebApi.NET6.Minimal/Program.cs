@@ -41,7 +41,7 @@ app.MapDelete("/summary/{id}", (int id, ILogger<WeatherForecast> logger) => {
 });
 
 
-app.Run();
+app.MapMethods("/options-or-head", new[] { "OPTIONS", "HEAD" }, () => "This is an options or head request ");
 
 internal record WeatherForecast(DateTime Date, int TemperatureC, string? Summary)
 {
